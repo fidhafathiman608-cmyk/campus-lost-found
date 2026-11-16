@@ -10,8 +10,8 @@ body { background:#f2f6ff; color:#222; }
 header { background:#1a56db; color:white; padding:18px; text-align:center; }
 header h1 { font-size:24px; }
 header p { font-size:13px; opacity:0.9; margin-top:4px; }
-nav { display:flex; justify-content:center; gap:10px; padding:12px; background:white; position:sticky; top:0; }
-nav button { padding:10px 16px; border:none; border-radius:20px; background:#e8efff; color:#1a56db; font-weight:bold; cursor:pointer; }
+nav { display:flex; justify-content:center; gap:10px; padding:12px; background:white; position:sticky; top:0; flex-wrap:wrap; }
+nav button { padding:10px 14px; border:none; border-radius:20px; background:#e8efff; color:#1a56db; font-weight:bold; cursor:pointer; font-size:13px; }
 nav button.active { background:#1a56db; color:white; }
 .container { max-width:600px; margin:15px auto; padding:0 12px; padding-bottom:40px; }
 .card { background:white; border-radius:14px; padding:16px; margin-bottom:14px; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
@@ -19,6 +19,7 @@ nav button.active { background:#1a56db; color:white; }
 input, select, textarea { width:100%; padding:11px; margin-bottom:10px; border:1px solid #ddd; border-radius:10px; font-size:14px; }
 .btn { width:100%; padding:12px; border:none; border-radius:10px; background:#1a56db; color:white; font-weight:bold; font-size:15px; cursor:pointer; }
 .btn-green { background:#0a9d5c; }
+.btn-red { background:#d00; }
 .search-box { display:flex; gap:8px; margin-bottom:12px; }
 .search-box input { margin:0; }
 .search-box button { padding:11px 16px; border:none; border-radius:10px; background:#1a56db; color:white; font-weight:bold; }
@@ -30,13 +31,40 @@ input, select, textarea { width:100%; padding:11px; margin-bottom:10px; border:1
 .small { font-size:12px; color:#666; margin-top:3px; }
 .hidden { display:none; }
 .footer { text-align:center; font-size:12px; color:#888; margin-top:20px; }
+.log-row { border:1px solid #eee; border-radius:10px; padding:10px; margin-bottom:8px; font-size:13px; line-height:1.6; }
+.green-dot { color:#0a9d5c; font-weight:bold; }
 </style>
 </head>
 <body>
 
+<!-- LOGIN SCREEN - FIRST -->
+<div id="loginScreen">
+  <div class="container" style="margin-top:40px;">
+    <div class="card" style="text-align:center;">
+      <h1 style="color:#1a56db;">🎒 Campus Lost & Found</h1>
+      <p style="font-size:13px; color:#555; margin-top:6px;">Kundara Campus | Please Login to Continue</p>
+    </div>
+    <div class="card">
+      <h2>🔐 Login</h2>
+      <input id="loginName" placeholder="Your Name - Ex: Fathima">
+      <input id="loginRoll" placeholder="Roll No / ID - Ex: 24CS01">
+      <select id="loginPurpose">
+        <option>Lost Report</option>
+        <option>Found Report</option>
+        <option>Just Checking Items</option>
+        <option>Claim Item</option>
+      </select>
+      <button class="btn" onclick="doLogin()">Login & Enter ➡️</button>
+      <p style="font-size:12px; color:#888; text-align:center; margin-top:10px;">Login cheythal nee keriya time save aavum</p>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP - AFTER LOGIN -->
+<div id="mainApp" class="hidden">
 <header>
   <h1>🎒 Campus Lost & Found</h1>
-  <p>CMS College of Engineering and Technology Coimbatore | Lost Something? We Will Find It!</p>
+  <p id="welcomeText">Welcome!</p>
 </header>
 
 <nav>
@@ -44,109 +72,125 @@ input, select, textarea { width:100%; padding:11px; margin-bottom:10px; border:1
   <button id="btn-lost" onclick="show('lost')">Report Lost</button>
   <button id="btn-found" onclick="show('found')">Report Found</button>
   <button id="btn-items" onclick="show('items')">All Items</button>
+  <button id="btn-log" onclick="show('log')">Entry Log</button>
+  <button onclick="doLogout()" style="background:#ffe4e4; color:#d00;">Logout 🚪</button>
 </nav>
 
 <div class="container">
-
-  <!-- HOME -->
   <div id="home">
     <div class="card" style="text-align:center;">
-      
-      <img src="IMG_8650.jpeg"
-       style="width:120px; border-radius:50%;"><h2>Welcome to Campus Lost & Found</h2>
-      <p style="font-size:14px; color:#555; line-height:1.5;">College il nashthapetta sadanangal thirichu kittan vendi oru simple system. Lost aayal report cheyyu, kittiyal post cheyyu.</p>
+      <h2>Welcome to Campus Lost & Found</h2>
+      <p style="font-size:14px; color:#555; line-height:1.5;">College il nashthapetta sadanangal thirichu kittan vendi oru simple system.</p>
       <br>
       <button class="btn" onclick="show('lost')">😢 I Lost Something</button><br><br>
       <button class="btn btn-green" onclick="show('found')">😊 I Found Something</button>
     </div>
-    <div class="card">
-      <h2>How it Works?</h2>
-      <p style="font-size:14px; line-height:1.8;">
-      1. Lost / Found form fill cheyyu 📝<br>
-      2. Photo upload cheyyu 📸<br>
-      3. Admin verify cheyyum ✅<br>
-      4. Owner nu thirichu kittum 🎉
-      </p>
-    </div>
-    <div class="card">
-      <h2>Recently Reported</h2>
-      <div id="recentList"></div>
-    </div>
+    <div class="card"><h2>How it Works?</h2><p style="font-size:14px; line-height:1.8;">1. Login cheyyu 🔐<br>2. Lost / Found form fill cheyyu 📝<br>3. Admin verify cheyyum ✅<br>4. Owner nu thirichu kittum 🎉</p></div>
+    <div class="card"><h2>Recently Reported</h2><div id="recentList"></div></div>
   </div>
 
-  <!-- LOST FORM -->
   <div id="lost" class="hidden">
-    <div class="card">
-      <h2>😢 Report Lost Item</h2>
+    <div class="card"><h2>😢 Report Lost Item</h2>
       <input id="lostName" placeholder="Your Name">
       <input id="lostPhone" placeholder="Phone Number">
-      <select id="lostCategory">
-        <option>ID Card</option><option>Book / Notebook</option>
-        <option>Umbrella</option><option>Charger / Cable</option>
-        <option>Mobile / Earphone</option><option>Bag / Bottle</option><option>Other</option>
-      </select>
+      <select id="lostCategory"><option>ID Card</option><option>Book / Notebook</option><option>Umbrella</option><option>Charger / Cable</option><option>Mobile / Earphone</option><option>Bag / Bottle</option><option>Other</option></select>
       <input id="lostPlace" placeholder="Evide vechu poyi? Ex: Library">
       <input id="lostDate" type="date">
-      <textarea id="lostDesc" placeholder="Item nte details - Colour, Brand..."></textarea>
+      <textarea id="lostDesc" placeholder="Item details - Colour, Brand..."></textarea>
       <input id="lostPhoto" type="file" accept="image/*">
       <button class="btn" onclick="submitItem('Lost')">Submit Lost Report</button>
     </div>
   </div>
 
-  <!-- FOUND FORM -->
   <div id="found" class="hidden">
-    <div class="card">
-      <h2>😊 Report Found Item</h2>
+    <div class="card"><h2>😊 Report Found Item</h2>
       <input id="foundName" placeholder="Your Name">
       <input id="foundPhone" placeholder="Phone Number">
-      <select id="foundCategory">
-        <option>ID Card</option><option>Book / Notebook</option>
-        <option>Umbrella</option><option>Charger / Cable</option>
-        <option>Mobile / Earphone</option><option>Bag / Bottle</option><option>Other</option>
-      </select>
+      <select id="foundCategory"><option>ID Card</option><option>Book / Notebook</option><option>Umbrella</option><option>Charger / Cable</option><option>Mobile / Earphone</option><option>Bag / Bottle</option><option>Other</option></select>
       <input id="foundPlace" placeholder="Evide kitti? Ex: Canteen">
       <input id="foundDate" type="date">
-      <textarea id="foundDesc" placeholder="Item nte details..."></textarea>
+      <textarea id="foundDesc" placeholder="Item details..."></textarea>
       <input id="foundPhoto" type="file" accept="image/*">
       <button class="btn btn-green" onclick="submitItem('Found')">Submit Found Report</button>
     </div>
   </div>
 
-  <!-- ALL ITEMS -->
   <div id="items" class="hidden">
-    <div class="card">
-      <h2>Search Items 🔍</h2>
-      <div class="search-box">
-        <input id="searchInput" placeholder="Search - ID, Book, Umbrella..." oninput="renderItems()">
-        <button onclick="renderItems()">Search</button>
-      </div>
-      <select id="filterCat" onchange="renderItems()">
-        <option value="">All Categories</option>
-        <option>ID Card</option><option>Book / Notebook</option><option>Umbrella</option><option>Charger / Cable</option><option>Mobile / Earphone</option><option>Bag / Bottle</option><option>Other</option>
-      </select>
+    <div class="card"><h2>Search Items 🔍</h2>
+      <div class="search-box"><input id="searchInput" placeholder="Search - ID, Book..." oninput="renderItems()"><button onclick="renderItems()">Search</button></div>
+      <select id="filterCat" onchange="renderItems()"><option value="">All Categories</option><option>ID Card</option><option>Book / Notebook</option><option>Umbrella</option><option>Charger / Cable</option><option>Mobile / Earphone</option><option>Bag / Bottle</option><option>Other</option></select>
       <div id="itemsList"></div>
     </div>
   </div>
 
-  <p class="footer">Project by Fidha Fathima, Shana , Nusrath | Campus Lost & Found Management System<br>For Demo - Data saved in this browser only</p>
+  <div id="log" class="hidden">
+    <div class="card"><h2>📋 Entry / Exit Log - Aaru keri, aaru poyi?</h2>
+      <p style="font-size:12px; color:#888; margin-bottom:10px;">Ithu Admin nu nokkan vendiyaanu</p>
+      <div id="logList"></div>
+      <button class="btn btn-red" onclick="clearLog()">Clear Log</button>
+    </div>
+  </div>
+
+  <p class="footer">Project by Fidha | Campus Lost & Found<br>Login Log saved in this browser only</p>
+</div>
 </div>
 
 <script>
 let items = JSON.parse(localStorage.getItem('lostFoundItems') || '[]');
+let logs = JSON.parse(localStorage.getItem('entryLogs') || '[]');
+let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
 if(items.length===0){
   items = [
-    {type:'Lost', name:'Anu', cat:'ID Card', place:'Library', date:'2026-11-10', desc:'Blue ID Card, Name Anu', photo:'', phone:'98765 43210'},
-    {type:'Found', name:'Meera', cat:'Umbrella', place:'Canteen', date:'2026-11-11', desc:'Black Umbrella found near canteen', photo:'', phone:'98765 43211'}
+    {type:'Lost', name:'Anu', cat:'ID Card', place:'Library', date:'2026-11-10', desc:'Blue ID Card', photo:'', phone:'98765 43210'},
+    {type:'Found', name:'Meera', cat:'Umbrella', place:'Canteen', date:'2026-11-11', desc:'Black Umbrella', photo:'', phone:'98765 43211'}
   ];
-  save();
+  saveItems();
 }
-function save(){ localStorage.setItem('lostFoundItems', JSON.stringify(items)); }
+function saveItems(){ localStorage.setItem('lostFoundItems', JSON.stringify(items)); }
+function saveLogs(){ localStorage.setItem('entryLogs', JSON.stringify(logs)); }
+function getTime(){ return new Date().toLocaleString('en-IN', {dateStyle:'short', timeStyle:'short'}); }
+
+function doLogin(){
+  let name = document.getElementById('loginName').value.trim();
+  let roll = document.getElementById('loginRoll').value.trim();
+  let purpose = document.getElementById('loginPurpose').value;
+  if(!name || !roll){ alert('Please enter Name and Roll No'); return; }
+  let entry = {name, roll, purpose, entryTime:getTime(), exitTime:'', status:'Inside'};
+  logs.unshift(entry);
+  saveLogs();
+  currentUser = entry;
+  localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  // auto fill forms
+  document.getElementById('lostName').value = name;
+  document.getElementById('foundName').value = name;
+  showApp();
+}
+function doLogout(){
+  if(currentUser){
+    // find last log of this user and mark exit
+    for(let l of logs){ if(l.name===currentUser.name && l.roll===currentUser.roll && l.status==='Inside'){ l.exitTime=getTime(); l.status='Left'; break; } }
+    saveLogs();
+  }
+  localStorage.removeItem('currentUser');
+  currentUser=null;
+  document.getElementById('mainApp').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  alert('Logout Success! Exit time saved.');
+  renderLogs();
+}
+function showApp(){
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+  document.getElementById('welcomeText').innerText = 'Welcome, ' + currentUser.name + ' (' + currentUser.roll + ') | Entry: ' + currentUser.entryTime;
+  renderItems(); renderLogs();
+}
 function show(id){
-  ['home','lost','found','items'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+  ['home','lost','found','items','log'].forEach(x=>document.getElementById(x).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-  document.getElementById('btn-'+id).classList.add('active');
-  renderItems();
+  let btn = document.getElementById('btn-'+id); if(btn) btn.classList.add('active');
+  renderItems(); renderLogs();
 }
 function submitItem(type){
   let prefix = type==='Lost' ? 'lost' : 'found';
@@ -158,39 +202,38 @@ function submitItem(type){
   let desc=document.getElementById(prefix+'Desc').value;
   if(!name || !place){ alert('Please fill Name and Place'); return; }
   let file=document.getElementById(prefix+'Photo').files[0];
-  if(file){
-    let reader=new FileReader();
-    reader.onload=function(e){ addItem(type,name,phone,cat,place,date,desc,e.target.result); };
-    reader.readAsDataURL(file);
-  } else { addItem(type,name,phone,cat,place,date,desc,''); }
+  if(file){ let r=new FileReader(); r.onload=function(e){ addItem(type,name,phone,cat,place,date,desc,e.target.result); }; r.readAsDataURL(file); }
+  else { addItem(type,name,phone,cat,place,date,desc,''); }
 }
 function addItem(type,name,phone,cat,place,date,desc,photo){
   items.unshift({type,name,phone,cat,place,date,desc,photo});
-  save(); renderItems(); alert('Submitted Successfully! Admin will verify.');
-  show('items');
+  saveItems(); renderItems(); alert('Submitted Successfully!'); show('items');
 }
 function renderItems(){
   let q=(document.getElementById('searchInput').value||'').toLowerCase();
   let f=document.getElementById('filterCat').value;
-  let list=items.filter(it=>{
-    let matchQ = (it.cat+' '+it.place+' '+it.desc).toLowerCase().includes(q);
-    let matchF = !f || it.cat===f;
-    return matchQ && matchF;
-  });
+  let list=items.filter(it=>{ let mq=(it.cat+' '+it.place+' '+it.desc).toLowerCase().includes(q); let mf=!f||it.cat===f; return mq&&mf; });
   let html = list.length? '' : '<p style="text-align:center; color:#888;">No items found</p>';
   list.forEach(it=>{
-    html += `<div class="item">
-      <img src="${it.photo || 'https://via.placeholder.com/80?text=No+Photo'}">
-      <div><span class="badge ${it.type==='Lost'?'lost':'found'}">${it.type}</span>
-      <b>${it.cat}</b><br><span style="font-size:13px;">${it.desc}</span>
-      <div class="small">📍 ${it.place} | 📅 ${it.date} | 👤 ${it.name} | 📞 ${it.phone}</div>
-      <button onclick="alert('Claim Request Sent! Please show proof to Admin.')" style="margin-top:6px; padding:6px 10px; border:none; border-radius:8px; background:#1a56db; color:white; font-size:12px;">Claim This Item</button>
-      </div></div>`;
+    html += `<div class="item"><img src="${it.photo || 'https://via.placeholder.com/80?text=No+Photo'}"><div><span class="badge ${it.type==='Lost'?'lost':'found'}">${it.type}</span><b>${it.cat}</b><br><span style="font-size:13px;">${it.desc}</span><div class="small">📍 ${it.place} | 📅 ${it.date} | 👤 ${it.name} | 📞 ${it.phone}</div><button onclick="alert('Claim Request Sent!')" style="margin-top:6px; padding:6px 10px; border:none; border-radius:8px; background:#1a56db; color:white; font-size:12px;">Claim This Item</button></div></div>`;
   });
   document.getElementById('itemsList').innerHTML=html;
   document.getElementById('recentList').innerHTML=html.slice(0,800);
 }
-renderItems();
+function renderLogs(){
+  if(!document.getElementById('logList')) return;
+  let html = logs.length? '' : '<p style="text-align:center; color:#888;">No logs yet</p>';
+  logs.forEach(l=>{
+    let status = l.status==='Inside' ? '<span class="green-dot">🟢 Ippo Ullil Undu</span>' : '🔴 Poyi';
+    html += `<div class="log-row"><b>${l.name}</b> (${l.roll})<br>🎯 Purpose: ${l.purpose}<br>➡️ Keri: ${l.entryTime}<br>⬅️ Poyi: ${l.exitTime || 'Not yet'}<br>${status}</div>`;
+  });
+  document.getElementById('logList').innerHTML=html;
+}
+function clearLog(){ if(confirm('Clear all logs?')){ logs=[]; saveLogs(); renderLogs(); } }
+
+// If already logged in, show app directly
+if(currentUser){ showApp(); }
+renderItems(); renderLogs();
 </script>
 </body>
 </html>
